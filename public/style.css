@@ -1,9 +1,31 @@
-#webcam-container {
-    rounded-corners: 10px;
-    background-color: white;
+body {
+	display: flex;
+	justify-content: center;
+	align-items: stretch; /* Ensures children fill the height */
+	height: 100vh;
+	margin: 50; /* Removes default margin */
+	padding: 0; /* Removes default padding */
+	background-color: #dfdfdf; /* Sets the background color to black */
+    height: 80%; /* Ensures the body takes up the full viewport height */
 }
 
-#label-container {
-    rounded-corners: 10px;
-    background-color: white;
+#ui-container {
+    display: flex;
+    width: calc(100% - 40px);
+    max-height: 80vh; /* Use max-height to prevent overflow */
+    margin: 20px; /* Adjusted margin */
+    padding: 20px; /* Adjusted padding */
+    box-sizing: border-box;
+    overflow-y: auto; /* Only show scrollbar when necessary */
 }
+
+#webcam-container, #label-container {
+	flex: 1; /* Each container will take up equal space */
+	background-color: white;
+	border-radius: 10px; /* Rounds the corners */
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds shadow for depth */
+	padding: 20px; /* Adds padding inside the containers */
+	margin: 0 10px; /* Adds space between the containers */
+	box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+}
+
