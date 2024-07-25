@@ -1,11 +1,12 @@
+/* Existing styles */
 body {
-	display: flex;
-	justify-content: center;
-	align-items: stretch; /* Ensures children fill the height */
-	height: 100vh;
-	margin: 50; /* Removes default margin */
-	padding: 0; /* Removes default padding */
-	background-color: #dfdfdf; /* Sets the background color to black */
+    display: flex;
+    justify-content: center;
+    align-items: stretch; /* Ensures children fill the height */
+    height: 100vh;
+    margin: 50; /* Removes default margin */
+    padding: 0; /* Removes default padding */
+    background-color: #dfdfdf; /* Sets the background color to black */
     height: 80%; /* Ensures the body takes up the full viewport height */
 }
 
@@ -29,3 +30,35 @@ body {
 	box-sizing: border-box; /* Includes padding and border in the element's total width and height */
 }
 
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        height: auto;
+        margin: 20px; /* Reduced margin for smaller screens */
+    }
+
+    #ui-container {
+        flex-direction: column;
+        width: auto; /* Adjust width for smaller screens */
+        max-height: none;
+    }
+
+    #webcam-container, #label-container {
+        margin: 10px 0; /* Stack containers vertically with space between */
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        margin: 10px; /* Further reduce margin for very small screens */
+    }
+
+    #ui-container {
+        padding: 10px; /* Reduce padding for very small screens */
+    }
+
+    #webcam-container, #label-container {
+        padding: 10px; /* Reduce padding inside the containers */
+    }
+}
