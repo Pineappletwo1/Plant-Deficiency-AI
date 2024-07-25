@@ -1,74 +1,76 @@
 /* Existing styles */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: stretch; /* Ensures children fill the height */
-    height: 120vh;
-    margin: 50; /* Removes default margin */
-    padding: 0; /* Removes default padding */
-    background-color: #dfdfdf; /* Sets the background color to black */
-    height: 80%; /* Ensures the body takes up the full viewport height */
+  display: flex;
+  justify-content: center;
+  align-items: stretch; /* Ensures children fill the height */
+  height: 120vh;
+  margin: 50; /* Removes default margin */
+  padding: 0; /* Removes default padding */
+  background-color: #dfdfdf; /* Sets the background color to black */
+  height: 80%; /* Ensures the body takes up the full viewport height */
 }
 
 #ui-container {
-    display: flex;
-    width: calc(100% - 40px);
-    max-height: 80vh; /* Use max-height to prevent overflow */
-    margin: 20px; /* Adjusted margin */
-    padding: 20px; /* Adjusted padding */
-    box-sizing: border-box;
-    overflow-y: auto; /* Only show scrollbar when necessary */
+  display: flex;
+  width: calc(100% - 40px);
+  max-height: 80vh; /* Use max-height to prevent overflow */
+  margin: 20px; /* Adjusted margin */
+  padding: 20px; /* Adjusted padding */
+  box-sizing: border-box;
+  overflow-y: auto; /* Only show scrollbar when necessary */
 }
 
-#webcam-container, #label-container {
-	flex: 1; /* Each container will take up equal space */
-	background-color: white;
-	border-radius: 30px; /* Rounds the corners */
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds shadow for depth */
-	padding: 20px; /* Adds padding inside the containers */
-	margin: 0 10px; /* Adds space between the containers */
-	box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+#webcam-container,
+#label-container {
+  flex: 1; /* Each container will take up equal space */
+  background-color: white;
+  border-radius: 30px; /* Rounds the corners */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds shadow for depth */
+  padding: 20px; /* Adds padding inside the containers */
+  margin: 0 10px; /* Adds space between the containers */
+  box-sizing: border-box; /* Includes padding and border in the element's total width and height */
 }
-
 
 @media (max-width: 768px) {
-    body {
-        flex-direction: column;
-        height: auto;
-        margin: 20px; /* Reduced margin for smaller screens */
-    }
+  body {
+    flex-direction: column;
+    height: auto;
+    margin: 20px; /* Reduced margin for smaller screens */
+  }
 
-    #ui-container {
-        flex-direction: column;
-        width: auto; /* Adjust width for smaller screens */
-        max-height: none;
-    }
+  #ui-container {
+    flex-direction: column;
+    width: auto; /* Adjust width for smaller screens */
+    max-height: none;
+  }
 
-    #webcam-container, #label-container {
-        margin: 10px 0; /* Stack containers vertically with space between */
-    }
+  #webcam-container,
+  #label-container {
+    margin: 10px 0; /* Stack containers vertically with space between */
+  }
 }
 
 @media (max-width: 480px) {
-    body {
-        margin: 10px; /* Further reduce margin for very small screens */
-    }
+  body {
+    margin: 10px; /* Further reduce margin for very small screens */
+  }
 
-    #ui-container {
-        padding: 10px; /* Reduce padding for very small screens */
-    }
+  #ui-container {
+    padding: 10px; /* Reduce padding for very small screens */
+  }
 
-    #webcam-container, #label-container {
-        padding: 10px; /* Reduce padding inside the containers */
-    }
+  #webcam-container,
+  #label-container {
+    padding: 10px; /* Reduce padding inside the containers */
+  }
 }
 #label-container {
-    height: 100%; 
-    display: flex; 
-    flex-direction: column; 
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 #predictionChart {
-    flex-grow: 1; 
-    width: 100%; 
+  flex-grow: 1;
+  width: 100%;
 }
