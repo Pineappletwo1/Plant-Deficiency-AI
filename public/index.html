@@ -1,127 +1,120 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="i love to scan plants">
-        <title>plant ahhhhh ohio</title>
-        <link rel="stylesheet" href="style.css">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    </head>
-<body onload="init()">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="i love to scan plants" />
+    <title>plant ahhhhh ohio</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body onload="init()">
     <div id="loading-overlay">
-        <div id="loading-text">Loading</div>
-        <img src="/img/leaf.png" alt="leaf" />
-        <img src="/img/mag.png" alt="magnifying glass" />
-
+      <div id="loading-text">Loading</div>
+      <img src="/img/leaf.png" alt="leaf" />
+      <img src="/img/mag.png" alt="magnifying glass" />
     </div>
     <div id="webcam-container"></div>
     <div id="label-container">
-        <canvas id="predictionChart"></canvas>
+      <canvas id="predictionChart"></canvas>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script type="text/javascript">
-    
-
-
-    let chart = null;
-        const ctx = document.getElementById('predictionChart').getContext('2d');
-        chart = new Chart(ctx, {
-            type: 'bar', 
-            data: {
-                labels: [], 
-                datasets: [{
-                    label: 'DEFICIENCIES',
-                    data: [], 
-                    backgroundColor: [],
-                    borderRadius: 30,
-                }]
+      let chart = null;
+      const ctx = document.getElementById("predictionChart").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "DEFICIENCIES",
+              data: [],
+              backgroundColor: [],
+              borderRadius: 30,
             },
-            options: {
-                indexAxis: 'y',
-                scales: {
-                    x: {
-                        display:false
-                    },
-                    y: {
-                        display: true
-                    }
-                }
-            }
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          scales: {
+            x: {
+              display: false,
+            },
+            y: {
+              display: true,
+            },
+          },
+        },
+      });
+
+      const URL = "./my_model/";
+
+      let model, webcam, labelContainer, maxPredictions;
+
+      async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        const flip = false;
+        webcam = new tmImage.Webcam(200, 200, flip);
+        await webcam.setup({ facingMode: "environment" });
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        webcam.canvas.style.borderRadius = "30px";
+        webcam.canvas.style.width = "auto";
+        webcam.canvas.style.height = "100%";
+
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) {
+          // and class labels
+          labelContainer.appendChild(document.createElement("div"));
+        }
+
+        document.getElementById("loading-overlay").style.display = "none";
+      }
+
+      async function loop() {
+        webcam.update();
+        const prediction = await model.predict(webcam.canvas);
+        const labels = prediction.map((p) => p.className);
+        const data = prediction.map((p) => p.probability);
+        const lightColorPalette = [
+          "rgba(255, 159, 164, 0.5)",
+          "rgba(255, 206, 159, 0.5)",
+          "rgba(159, 255, 164, 0.5)",
+          "rgba(159, 206, 255, 0.5)",
+        ];
+        const backgroundColors = prediction.map(
+          (p, index) => lightColorPalette[index % lightColorPalette.length],
+        );
+
+        chart.data.labels = labels;
+        chart.data.datasets.forEach((dataset) => {
+          dataset.data = data;
+          dataset.backgroundColor = backgroundColors;
         });
+        chart.update();
 
+        window.requestAnimationFrame(loop);
+      }
 
-
-        const URL = "./my_model/";
-
-        
-
-        let model, webcam, labelContainer, maxPredictions;
-
-        async function init() {
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
-            model = await tmImage.load(modelURL, metadataURL);
-            maxPredictions = model.getTotalClasses();
-
-
-            const flip = false;
-            webcam = new tmImage.Webcam(200, 200, flip);
-            await webcam.setup({ facingMode: "environment" });
-            await webcam.play();
-            window.requestAnimationFrame(loop);
-
-            webcam.canvas.style.borderRadius = '30px';
-            webcam.canvas.style.width = 'auto'; 
-            webcam.canvas.style.height = '100%'; 
-
-
-            document.getElementById("webcam-container").appendChild(webcam.canvas);
-            labelContainer = document.getElementById("label-container");
-            for (let i = 0; i < maxPredictions; i++) { // and class labels
-                labelContainer.appendChild(document.createElement("div"));
-            }
-
-            document.getElementById("loading-overlay").style.display = 'none';
+      async function predict() {
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+          const classPrediction =
+            prediction[i].className +
+            ": " +
+            prediction[i].probability.toFixed(2);
+          labelContainer.childNodes[i].innerHTML = classPrediction;
         }
-
-        async function loop() {
-            webcam.update(); 
-            const prediction = await model.predict(webcam.canvas);
-            const labels = prediction.map(p => p.className);
-            const data = prediction.map(p => p.probability);
-            const lightColorPalette = [
-                'rgba(255, 159, 164, 0.5)', 
-                'rgba(255, 206, 159, 0.5)', 
-                'rgba(159, 255, 164, 0.5)', 
-                'rgba(159, 206, 255, 0.5)' 
-            ];
-            const backgroundColors = prediction.map((p, index) => 
-                lightColorPalette[index % lightColorPalette.length] 
-            );
-            
-
-            chart.data.labels = labels;
-            chart.data.datasets.forEach((dataset) => {
-                dataset.data = data;
-                dataset.backgroundColor = backgroundColors;
-            });
-            chart.update();
-
-            window.requestAnimationFrame(loop);
-        }
-
-        async function predict() {
-            const prediction = await model.predict(webcam.canvas);
-            for (let i = 0; i < maxPredictions; i++) {
-                const classPrediction =
-                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                labelContainer.childNodes[i].innerHTML = classPrediction;
-            }
-        }
-    </script>    
-</body>
-
+      }
+    </script>
+  </body>
 </html>
