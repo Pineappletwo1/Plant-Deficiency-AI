@@ -3,8 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="i love to scan plants">
-        <title>plant ahhhhh ohio</title>
+        <meta name="description" content="Detect Deficiencys in plants using AI">
+        <title>LeafLens</title>
         <link rel="stylesheet" href="style.css">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
@@ -20,12 +20,72 @@
         <canvas id="predictionChart"></canvas>
     </div>
     
+    <div id="tutorial-overlay" style="display: none;">
+        <div id="tutorial-box">This is the camera, point the camera at the plant</div>
+        <button onclick="nexttutorial();">OK</button>
+    </div>
+    <div id="dimmed-content" style="display: none;"></div>
+
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script type="text/javascript">
     
+    function nexttutorial(){
+        document.getElementById("tutorial-box").innerHTML = "This is the Data Panel, you will see the predictions here, the longer the bar the more confident the model is";
+        document.getElementById("webcam-container").classList.add("dimmed");
+        document.getElementById("loading-overlay").classList.add("dimmed");
+        document.getElementById("dimmed-content").style.display = "none";
 
+        const endButton = document.createElement("button");
+        endButton.innerText = "End Tutorial";
+        endButton.onclick = endTutorial;
+        document.getElementById("tutorial-overlay").appendChild(endButton);
 
+        document.querySelector("#tutorial-overlay button").style.display = "none";
+    }
+
+    function endTutorial() {
+        document.getElementById("tutorial-overlay").style.display = "none";
+        document.getElementById("dimmed-content").style.display = "none";
+        document.getElementById("webcam-container").classList.remove("dimmed");
+        document.getElementById("loading-overlay").classList.remove("dimmed");
+    }
+
+    function setCookie(name, value, days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function checkFirstVisit() {
+            var visited = getCookie("visited");
+            if (visited !== "false"){
+                document.getElementById("tutorial-overlay").style.display = "flex";
+                document.getElementById("dimmed-content").style.display = "block";
+                document.getElementById("webcam-container").style.zIndex = 1001;
+            }
+
+        }
+
+        checkFirstVisit();
     let chart = null;
         const ctx = document.getElementById('predictionChart').getContext('2d');
         chart = new Chart(ctx, {
