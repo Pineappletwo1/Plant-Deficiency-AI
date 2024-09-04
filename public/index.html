@@ -9,6 +9,12 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
 <body onload="init()">
+    <div id="loading-overlay">
+        <div id="loading-text">Loading</div>
+        <img src="/img/leaf.png" alt="leaf" />
+        <img src="/img/mag.png" alt="magnifying glass" />
+
+    </div>
     <div id="webcam-container"></div>
     <div id="label-container">
         <canvas id="predictionChart"></canvas>
@@ -63,7 +69,7 @@
 
             const flip = false;
             webcam = new tmImage.Webcam(200, 200, flip);
-            await webcam.setup(); 
+            await webcam.setup({ facingMode: "environment" });
             await webcam.play();
             window.requestAnimationFrame(loop);
 
@@ -78,7 +84,7 @@
                 labelContainer.appendChild(document.createElement("div"));
             }
 
-            
+            document.getElementById("loading-overlay").style.display = 'none';
         }
 
         async function loop() {
