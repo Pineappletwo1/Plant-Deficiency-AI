@@ -34,17 +34,20 @@
     <script type="text/javascript">
     
     function nexttutorial(){
-        document.getElementById("tutorial-box").innerHTML = "This is the Data Panel, you will see the predictions here, the longer the bar the more confident the model is";
-        document.getElementById("webcam-container").classList.add("dimmed");
-        document.getElementById("loading-overlay").classList.add("dimmed");
-        document.getElementById("dimmed-content").style.display = "none";
+    document.getElementById("tutorial-box").innerHTML = "This is the predictions box, it will show the prediction of deficicencies in the plant";
+    document.getElementById("webcam-container").style.zIndex = 100;
+    document.getElementById("webcam-container").classList.add("dimmed");
+    document.getElementById("loading-overlay").classList.add("dimmed");
+    document.getElementById("label-container").style.zIndex = 970; // Corrected ID
+    document.getElementById("loading-overlay").classList.remove("dimmed");
 
-        const endButton = document.createElement("button");
-        endButton.innerText = "End Tutorial";
-        endButton.onclick = endTutorial;
-        document.getElementById("tutorial-overlay").appendChild(endButton);
-
-        document.querySelector("#tutorial-overlay button").style.display = "none";
+    const endButton = document.createElement("button");
+    endButton.innerText = "End Tutorial";
+    endButton.onclick = endTutorial;
+    endButton.style.marginLeft = "20px";
+    endButton.style.marginRight = "auto";
+    document.getElementById("tutorial-overlay").appendChild(endButton);
+    document.querySelector("#tutorial-overlay button").style.display = "none";
     }
 
     function endTutorial() {
@@ -52,6 +55,9 @@
         document.getElementById("dimmed-content").style.display = "none";
         document.getElementById("webcam-container").classList.remove("dimmed");
         document.getElementById("loading-overlay").classList.remove("dimmed");
+        document.getElementById("dimmed-content").style.display = "none";
+        document.getElementById("tutorial-overlay button").style.display = "none";
+
     }
 
     function setCookie(name, value, days) {
@@ -77,10 +83,10 @@
 
         function checkFirstVisit() {
             var visited = getCookie("visited");
-            if (visited !== "false"){
+            if (visited == "false"){
                 document.getElementById("tutorial-overlay").style.display = "flex";
                 document.getElementById("dimmed-content").style.display = "block";
-                document.getElementById("webcam-container").style.zIndex = 1001;
+                document.getElementById("webcam-container").style.zIndex = 952;
             }
 
         }
@@ -171,7 +177,8 @@
             chart.update();
 
             window.requestAnimationFrame(loop);
-        }
+        }0
+        
 
         async function predict() {
             const prediction = await model.predict(webcam.canvas);
