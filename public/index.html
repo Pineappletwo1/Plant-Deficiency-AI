@@ -1,194 +1,190 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Detect Deficiencys in plants using AI">
-        <title>LeafLens</title>
-        <link rel="stylesheet" href="style.css">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    </head>
-<body onload="init()">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Detect Deficiencys in plants using AI" />
+    <title>LeafLens</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body onload="init()">
     <div id="loading-overlay">
-        <div id="loading-text">Loading</div>
-        <img src="/img/leaf.png" alt="leaf" />
-        <img src="/img/mag.png" alt="magnifying glass" />
-
+      <div id="loading-text">Loading</div>
+      <img src="/img/leaf.png" alt="leaf" />
+      <img src="/img/mag.png" alt="magnifying glass" />
     </div>
     <div id="webcam-container"></div>
     <div id="label-container">
-        <canvas id="predictionChart"></canvas>
+      <canvas id="predictionChart"></canvas>
     </div>
-    
-    <div id="tutorial-overlay" style="display: none;">
-        <div id="tutorial-box">This is the camera, point the camera at the plant</div>
-        <button onclick="nexttutorial();">OK</button>
+
+    <div id="tutorial-overlay" style="display: none">
+      <div id="tutorial-box">
+        This is the camera, point the camera at the plant
+      </div>
+      <button onclick="nexttutorial();">OK</button>
     </div>
-    <div id="dimmed-content" style="display: none;"></div>
-
-
-
+    <div id="dimmed-content" style="display: none"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script type="text/javascript">
-    
-    function nexttutorial(){
-    document.getElementById("tutorial-box").innerHTML = "This is the predictions box, it will show the prediction of deficicencies in the plant";
-    document.getElementById("webcam-container").style.zIndex = 100;
-    document.getElementById("webcam-container").classList.add("dimmed");
-    document.getElementById("loading-overlay").classList.add("dimmed");
-    document.getElementById("label-container").style.zIndex = 970; // Corrected ID
-    document.getElementById("loading-overlay").classList.remove("dimmed");
+      function nexttutorial() {
+        document.getElementById("tutorial-box").innerHTML =
+          "This is the predictions box, it will show the prediction of deficicencies in the plant";
+        document.getElementById("webcam-container").style.zIndex = 100;
+        document.getElementById("webcam-container").classList.add("dimmed");
+        document.getElementById("loading-overlay").classList.add("dimmed");
+        document.getElementById("label-container").style.zIndex = 970; // Corrected ID
+        document.getElementById("loading-overlay").classList.remove("dimmed");
 
-    const endButton = document.createElement("button");
-    endButton.innerText = "End Tutorial";
-    endButton.onclick = endTutorial;
-    endButton.style.marginLeft = "20px";
-    endButton.style.marginRight = "auto";
-    document.getElementById("tutorial-overlay").appendChild(endButton);
-    document.querySelector("#tutorial-overlay button").style.display = "none";
-    }
+        const endButton = document.createElement("button");
+        endButton.innerText = "End Tutorial";
+        endButton.onclick = endTutorial;
+        endButton.style.marginLeft = "20px";
+        endButton.style.marginRight = "auto";
+        document.getElementById("tutorial-overlay").appendChild(endButton);
+        document.querySelector("#tutorial-overlay button").style.display =
+          "none";
+      }
 
-    function endTutorial() {
+      function endTutorial() {
         document.getElementById("tutorial-overlay").style.display = "none";
         document.getElementById("dimmed-content").style.display = "none";
         document.getElementById("webcam-container").classList.remove("dimmed");
         document.getElementById("loading-overlay").classList.remove("dimmed");
         document.getElementById("dimmed-content").style.display = "none";
-        document.getElementById("tutorial-overlay button").style.display = "none";
+        document.getElementById("tutorial-overlay button").style.display =
+          "none";
+      }
 
-    }
-
-    function setCookie(name, value, days) {
-            var expires = "";
-            if (days) {
-                var date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                expires = "; expires=" + date.toUTCString();
-            }
-            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+      function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+          var date = new Date();
+          date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+          expires = "; expires=" + date.toUTCString();
         }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+      }
 
-        function getCookie(name) {
-            var nameEQ = name + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
+      function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(";");
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == " ") c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) == 0)
+            return c.substring(nameEQ.length, c.length);
         }
+        return null;
+      }
 
-        function checkFirstVisit() {
-            var visited = getCookie("visited");
-            if (visited == "false"){
-                document.getElementById("tutorial-overlay").style.display = "flex";
-                document.getElementById("dimmed-content").style.display = "block";
-                document.getElementById("webcam-container").style.zIndex = 952;
-            }
-
+      function checkFirstVisit() {
+        var visited = getCookie("visited");
+        if (visited == "false") {
+          document.getElementById("tutorial-overlay").style.display = "flex";
+          document.getElementById("dimmed-content").style.display = "block";
+          document.getElementById("webcam-container").style.zIndex = 952;
         }
+      }
 
-        checkFirstVisit();
-    let chart = null;
-        const ctx = document.getElementById('predictionChart').getContext('2d');
-        chart = new Chart(ctx, {
-            type: 'bar', 
-            data: {
-                labels: [], 
-                datasets: [{
-                    label: 'DEFICIENCIES',
-                    data: [], 
-                    backgroundColor: [],
-                    borderRadius: 30,
-                }]
+      checkFirstVisit();
+      let chart = null;
+      const ctx = document.getElementById("predictionChart").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "DEFICIENCIES",
+              data: [],
+              backgroundColor: [],
+              borderRadius: 30,
             },
-            options: {
-                indexAxis: 'y',
-                scales: {
-                    x: {
-                        display:false
-                    },
-                    y: {
-                        display: true
-                    }
-                }
-            }
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          scales: {
+            x: {
+              display: false,
+            },
+            y: {
+              display: true,
+            },
+          },
+        },
+      });
+
+      const URL = "./my_model/";
+
+      let model, webcam, labelContainer, maxPredictions;
+
+      async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        const flip = false;
+        webcam = new tmImage.Webcam(200, 200, flip);
+        await webcam.setup({ facingMode: "environment" });
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        webcam.canvas.style.borderRadius = "30px";
+        webcam.canvas.style.width = "auto";
+        webcam.canvas.style.height = "100%";
+
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) {
+          // and class labels
+          labelContainer.appendChild(document.createElement("div"));
+        }
+
+        document.getElementById("loading-overlay").style.display = "none";
+      }
+
+      async function loop() {
+        webcam.update();
+        const prediction = await model.predict(webcam.canvas);
+        const labels = prediction.map((p) => p.className);
+        const data = prediction.map((p) => p.probability);
+        const lightColorPalette = [
+          "rgba(255, 159, 164, 0.5)",
+          "rgba(255, 206, 159, 0.5)",
+          "rgba(159, 255, 164, 0.5)",
+          "rgba(159, 206, 255, 0.5)",
+        ];
+        const backgroundColors = prediction.map(
+          (p, index) => lightColorPalette[index % lightColorPalette.length],
+        );
+
+        chart.data.labels = labels;
+        chart.data.datasets.forEach((dataset) => {
+          dataset.data = data;
+          dataset.backgroundColor = backgroundColors;
         });
+        chart.update();
 
+        window.requestAnimationFrame(loop);
+      }
+      0;
 
-
-        const URL = "./my_model/";
-
-        
-
-        let model, webcam, labelContainer, maxPredictions;
-
-        async function init() {
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
-            model = await tmImage.load(modelURL, metadataURL);
-            maxPredictions = model.getTotalClasses();
-
-
-            const flip = false;
-            webcam = new tmImage.Webcam(200, 200, flip);
-            await webcam.setup({ facingMode: "environment" });
-            await webcam.play();
-            window.requestAnimationFrame(loop);
-
-            webcam.canvas.style.borderRadius = '30px';
-            webcam.canvas.style.width = 'auto'; 
-            webcam.canvas.style.height = '100%'; 
-
-
-            document.getElementById("webcam-container").appendChild(webcam.canvas);
-            labelContainer = document.getElementById("label-container");
-            for (let i = 0; i < maxPredictions; i++) { // and class labels
-                labelContainer.appendChild(document.createElement("div"));
-            }
-
-            document.getElementById("loading-overlay").style.display = 'none';
+      async function predict() {
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+          const classPrediction =
+            prediction[i].className +
+            ": " +
+            prediction[i].probability.toFixed(2);
+          labelContainer.childNodes[i].innerHTML = classPrediction;
         }
-
-        async function loop() {
-            webcam.update(); 
-            const prediction = await model.predict(webcam.canvas);
-            const labels = prediction.map(p => p.className);
-            const data = prediction.map(p => p.probability);
-            const lightColorPalette = [
-                'rgba(255, 159, 164, 0.5)', 
-                'rgba(255, 206, 159, 0.5)', 
-                'rgba(159, 255, 164, 0.5)', 
-                'rgba(159, 206, 255, 0.5)' 
-            ];
-            const backgroundColors = prediction.map((p, index) => 
-                lightColorPalette[index % lightColorPalette.length] 
-            );
-            
-
-            chart.data.labels = labels;
-            chart.data.datasets.forEach((dataset) => {
-                dataset.data = data;
-                dataset.backgroundColor = backgroundColors;
-            });
-            chart.update();
-
-            window.requestAnimationFrame(loop);
-        }0
-        
-
-        async function predict() {
-            const prediction = await model.predict(webcam.canvas);
-            for (let i = 0; i < maxPredictions; i++) {
-                const classPrediction =
-                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                labelContainer.childNodes[i].innerHTML = classPrediction;
-            }
-        }
-    </script>    
-</body>
-
+      }
+    </script>
+  </body>
 </html>
