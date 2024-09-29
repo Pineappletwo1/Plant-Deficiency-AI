@@ -83,7 +83,7 @@
 
         function checkFirstVisit() {
             var visited = getCookie("visited");
-            if (visited == "false"){
+            if (visited != "true"){
                 document.getElementById("tutorial-overlay").style.display = "flex";
                 document.getElementById("dimmed-content").style.display = "block";
                 document.getElementById("webcam-container").style.zIndex = 952;
